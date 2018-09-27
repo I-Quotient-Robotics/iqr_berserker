@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="berserker" description="iqr berserker robot">
+
+  <!-- Include accessories -->
+  <xacro:include filename="$(find berserker_description)/urdf/berserker_macro.urdf.xacro" />
+
+  <link name="base_footprint" />
+  <xacro:berserker parent="base_footprint" >
+    <origin xyz="0.0 0.0 0.1138" rpy="0 0 0" />
+  </xacro:berserker>
+
+</robot>

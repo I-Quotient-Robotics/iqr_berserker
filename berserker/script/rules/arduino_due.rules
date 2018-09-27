@@ -1,0 +1,1 @@
+KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="003d", MODE:="0777", GROUP:="dialout",  SYMLINK+="berserker"

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="berserker" description="iqr berserker robot">
+  <xacro:property name="PI" value="3.1415926535897931" />
+  <xacro:property name="prefix" value="berserker" />
+  <material name="yellow"><color rgba="0.8 0.8 0.0 2.0" /></material>
+  <material name="black"><color rgba="0.15 0.15 0.15 3.0" /></material>
+
+
+  <!-- Include accessories -->
+  <xacro:include filename="$(find berserker_description)/urdf/rplidar_a2.urdf.xacro" />
+
+  <xacro:macro name="berserker" params="parent *origin">
+    <!--base link-->
+    <joint name="base_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="base_link"/>
+    </joint>
+    <link name="base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://berserker_description/urdf/mesh/bady.stl" />
+        </geometry>
+        <material name="yellow"/>
+      </visual>
+    </link>
+
+    <!--GPS link-->
+    <joint name="gps_joint" type="fixed">
+      <origin xyz="0.0 0.0 0.1" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="gps_link"/>
+    </joint>
+    <link name="gps_link"/>
+      
+    <!--IMU link-->
+    <joint name="imu_joint" type="fixed">
+      <origin xyz="0.0 0.0 0.1" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="imu_link"/>
+    </joint>
+    <link name="imu_link"/>
+
+    <!--front left wheel link-->
+    <joint name="FL_wheel_joint" type="continuous">
+      <origin xyz="0.3 0.2952 0.0442" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="FL_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    <link name="FL_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://berserker_description/urdf/mesh/wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+    <!--front right wheel link-->
+    <joint name="FR_wheel_joint" type="continuous">
+      <origin xyz="0.3 -0.2952 0.0442" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="FR_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    <link name="FR_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://berserker_description/urdf/mesh/wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+    <!--rear left wheel link-->
+    <joint name="RL_wheel_joint" type="continuous">
+      <origin xyz="-0.3 0.2952 0.0442" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="RL_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    <link name="RL_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://berserker_description/urdf/mesh/wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+    <!--rear right wheel link-->
+    <joint name="RR_wheel_joint" type="continuous">
+      <origin xyz="-0.3 -0.2952 0.0442" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="RR_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    <link name="RR_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://berserker_description/urdf/mesh/wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!--rplidar link-->
+  <xacro:rplidar_a2 parent="base_link" >
+    <origin xyz="0.35673 0.0 0.29351" rpy="0 0 ${PI}" />
+  </xacro:rplidar_a2>
+  
+</robot>

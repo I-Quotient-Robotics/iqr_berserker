@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/iqr/Desktop/warthog/devel/include",
+                    "/home/iqr/work_ros/arbotix_ros/devel/include",
+                    "/home/iqr/work_ros/zed_ros/devel/include",
+                    "/opt/ros/kinetic/include",
+                    "/usr/include"
+                ]
+            },
+            "includePath": [
+                "/home/iqr/Desktop/warthog/devel/include",
+                "/home/iqr/work_ros/arbotix_ros/devel/include",
+                "/home/iqr/work_ros/zed_ros/devel/include",
+                "/opt/ros/kinetic/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

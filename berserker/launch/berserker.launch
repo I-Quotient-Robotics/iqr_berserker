@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!--common settings-->
+  <arg name="lidar" default="true"/>
+  <arg name="teleop" default="true"/>
+  <arg name="imu_gps" default="true"/>
+  <arg name="hector" default="false"/>
+  <arg name="gmapping" default="false"/>
+  <arg name="twist_mux" default="false"/>
+  <arg name="robot_localization" default="false"/>
+  <arg name="amcl" default="false"/>
+  <arg name="move_base" default="false"/>
+  <arg name="have_map" default="false" doc="set to true to load pre-saved map"/>
+  <arg name="map" default="map.yaml" doc="pre-saved map path"/>
+
+  <!--berserker ros node-->
+  <include file="$(find berserker_bringup)/launch/berserker_bringup.launch"/>
+
+  <!--joy ros node-->
+  <group if="$(arg teleop)">
+    <include file="$(find iqr_teleop)/launch/joy_teleop.launch"/>
+  </group>
+
+  <!--imu&gps ros node-->
+  <group if="$(arg imu_gps)">
+    <include file="$(find jy901_driver)/launch/jy901.launch"/>
+  </group>
+
+  <!--rplidar-a2 ros node-->
+  <group if="$(arg lidar)">
+    <include file="$(find rplidar_ros)/launch/rplidar.launch"/>
+  </group>
+
+  <!--twist_mux ros node-->
+  <group if="$(arg twist_mux)">
+    <include file="$(find ros_twist_mux)/launch/twist_mux.launch" />
+  </group>
+
+  <!--gmapping slam ros node-->
+  <group if="$(arg gmapping)">
+    <include file="$(find berserker_navigation)/launch/gmapping.launch"/>
+  </group>
+
+  <!--hector slam ros node-->
+  <group if="$(arg hector)">
+    <include file="$(find berserker_navigation)/launch/hector.launch"/>
+  </group>
+
+  <!--robot_localization ros node-->
+  <group if="$(arg robot_localization)">
+    <include file="$(find berserker_navigation)/launch/robot_localization.launch" />
+  </group>
+
+  <!--map server ros node-->
+  <group if="$(arg have_map)">
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)" />
+  </group>
+
+  <!--amcl ros node-->
+  <group if="$(arg amcl)">
+    <include file="$(find berserker_navigation)/launch/amcl.launch"/>
+  </group>
+
+  <!--move_base ros node-->
+  <group if="$(arg move_base)">
+    <include file="$(find berserker_navigation)/launch/move_base.launch" />
+  </group>
+
+</launch>
