@@ -3,7 +3,8 @@ Panels:
     Help Height: 78
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Global Options1
       Splitter Ratio: 0.5
     Tree Height: 531
   - Class: rviz/Selection
@@ -141,7 +142,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.00999999978
+      Size (m): 0.0199999996
       Style: Flat Squares
       Topic: /scan
       Unreliable: false
@@ -172,25 +173,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 3.45246625
+      Distance: 6.8145566
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.432245791
-        Y: 0.638702273
+        X: 2.08129787
+        Y: 0.407093227
         Z: 2.38418579e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.435398638
+      Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 1.09039807
+      Yaw: 0.0103991125
     Saved: ~
 Window Geometry:
   Displays:

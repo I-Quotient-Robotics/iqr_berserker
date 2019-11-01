@@ -6,14 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-	nav_msgs
-	sensor_msgs
-  tf	
-  message_generation  
-  dynamic_reconfigure 
 )
-
-
 
 catkin_package()
 
@@ -25,16 +18,4 @@ include_directories(
 )
 
 
-add_executable(berserker_driver 
-  nodes/berserker_driver_node.cpp
-  src/CRobotSerial.cpp
-  src/CSerial.cpp
-  src/function.cpp
-  src/CUart.cpp
-  src/CRobot.cpp
-  src/thread.cpp
-)  
-target_link_libraries(berserker_driver 
-  ${catkin_LIBRARIES}
-)
 

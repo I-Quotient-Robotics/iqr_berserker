@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-	
-	<!-- Load URDF file -->
+
+  <!-- Load URDF file -->
   <include file="$(find berserker_description)/launch/state_publisher.launch" />
 
-	<!-- Load robot driver -->
-	<node pkg="berserker_bringup" type="berserker_driver" name="berserker" output="screen">
-		<rosparam file="$(find berserker_bringup)/config/params.yaml" command="load" />	
-		<remap from="berserker/cmd_vel" to="cmd_vel"/>
-		<remap from="berserker/odom" to="odom"/>		
-	</node>
-	
+  <!-- Load robot driver -->
+  <node pkg="berserker_driver" type="BerserkerDriverNode" name="berserker" output="screen">
+    <!-- <rosparam file="$(find berserker_bringup)/config/params.yaml" command="load" />	 -->
+    <!-- <remap from="berserker/cmd_vel" to="cmd_vel"/>
+    <remap from="berserker/odom" to="odom"/> -->
+  </node>
+
+
+
 </launch>

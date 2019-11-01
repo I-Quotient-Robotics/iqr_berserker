@@ -82,6 +82,7 @@
       <parent link="base_link"/>
       <child link="RL_wheel_link"/>
       <axis xyz="0 1 0"/>
+      <mimic joint="FL_wheel_joint" multiplier="1" offset="0"/>
     </joint>
     <link name="RL_wheel_link">
       <visual>
@@ -99,6 +100,7 @@
       <parent link="base_link"/>
       <child link="RR_wheel_link"/>
       <axis xyz="0 1 0"/>
+      <mimic joint="FR_wheel_joint" multiplier="1" offset="0"/>
     </joint>
     <link name="RR_wheel_link">
       <visual>

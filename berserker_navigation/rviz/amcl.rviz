@@ -4,10 +4,12 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /Global Map1/Costmap1
         - /Local Map1/Costmap1
         - /Local Map1/Planner1
         - /Local Map1/Trajectory Cloud1
+        - /TF1/Frames1
       Splitter Ratio: 0.605187297
     Tree Height: 531
   - Class: rviz/Selection
@@ -112,36 +114,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/LaserScan
-      Color: 255; 255; 255
-      Color Transformer: Intensity
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 47
-      Min Color: 0; 0; 0
-      Min Intensity: 47
-      Name: LaserScan
-      Position Transformer: XYZ
-      Queue Size: 10
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.00999999978
-      Style: Squares
-      Topic: /scan
-      Unreliable: false
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -355,6 +327,92 @@ Visualization Manager:
       Topic: /move_base/NavfnROS/plan
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 47
+      Min Color: 0; 0; 0
+      Min Intensity: 47
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.0299999993
+      Style: Flat Squares
+      Topic: /scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        FL_wheel_link:
+          Value: true
+        FR_wheel_link:
+          Value: true
+        RL_wheel_link:
+          Value: true
+        RR_wheel_link:
+          Value: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        gps_link:
+          Value: true
+        imu_link:
+          Value: true
+        laser:
+          Value: true
+        lidar_base_link:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        map:
+          odom:
+            base_footprint:
+              base_link:
+                FL_wheel_link:
+                  {}
+                FR_wheel_link:
+                  {}
+                RL_wheel_link:
+                  {}
+                RR_wheel_link:
+                  {}
+                gps_link:
+                  {}
+                imu_link:
+                  {}
+                lidar_base_link:
+                  laser:
+                    {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -379,25 +437,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 3.66935301
+      Distance: 575.486389
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -9.1616497
+        Y: -82.3258133
+        Z: 1.84380006e-05
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.569796979
+      Pitch: 1.56979632
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 1.18539906
+      Yaw: 4.72356987
     Saved: ~
 Window Geometry:
   Displays:
@@ -415,5 +473,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1301
-  X: 65
-  Y: 24
+  X: 384
+  Y: 85

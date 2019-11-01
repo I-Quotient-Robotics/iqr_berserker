@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
   <!--common settings-->
-  <arg name="lidar" default="true"/>
+  <arg name="lidar" default="true"/> <!--rplidar-a2 ros node-->
   <arg name="teleop" default="true"/>
   <arg name="imu_gps" default="true"/>
+  <arg name="rtk_gps" default="false"/>
   <arg name="hector" default="false"/>
-  <arg name="gmapping" default="false"/>
+  <arg name="gmapping" default="false"/> 
   <arg name="twist_mux" default="false"/>
   <arg name="robot_localization" default="false"/>
   <arg name="amcl" default="false"/>
+  <arg name="gps_goal" default="false" />
   <arg name="move_base" default="false"/>
   <arg name="have_map" default="false" doc="set to true to load pre-saved map"/>
   <arg name="map" default="map.yaml" doc="pre-saved map path"/>
@@ -24,6 +26,11 @@
   <!--imu&gps ros node-->
   <group if="$(arg imu_gps)">
     <include file="$(find jy901_driver)/launch/jy901.launch"/>
+  </group>
+
+  <!--rtk_gps-->
+  <group if="$(arg rtk_gps)">
+    <include file="$(find rtk_gps)/launch/rtk_gps.launch"/>
   </group>
 
   <!--rplidar-a2 ros node-->
@@ -53,12 +60,17 @@
 
   <!--map server ros node-->
   <group if="$(arg have_map)">
-    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find berserker_navigation)/maps/$(arg map).yaml" />
   </group>
 
   <!--amcl ros node-->
   <group if="$(arg amcl)">
     <include file="$(find berserker_navigation)/launch/amcl.launch"/>
+  </group>
+
+  <!--gps_goal-->
+  <group if="$(arg gps_goal)">
+    <node name="current_gps_pub" pkg="gps_goal" type="current_gps_pub" />
   </group>
 
   <!--move_base ros node-->
