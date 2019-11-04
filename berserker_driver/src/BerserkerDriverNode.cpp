@@ -58,6 +58,7 @@ private:
   ros::Publisher _odomPub;
   ros::Publisher _jointPub;
   sensor_msgs::JointState _js;
+  tf::TransformBroadcaster odom_broadcaster;
 };
 
 BerserkerDriverNode::BerserkerDriverNode()
@@ -119,11 +120,11 @@ void BerserkerDriverNode::pubOdom()
 
   int32_t nLE, nRE;
   float nLS, nRS;
-  _bd.getEncoder(nLE, nRE);
+  _bd->getEncoder(nLE, nRE);
   _bd->getWheelSpeed(nLS, nRS);
-  double vx = (nLS + nRS)/2.0;
-  double vth = (nRS - nLS)/0.60;
-  
+  double vx = (nLS + nRS) / 2.0;
+  double vth = (nRS - nLS) / 0.60;
+
   //compute odometry in a typical way given the velocities of the robot
   double dt = (now_time - last_time).toSec();
   double delta_x = (vx * cos(th)) * dt;
