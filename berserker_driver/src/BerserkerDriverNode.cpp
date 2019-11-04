@@ -22,12 +22,14 @@
 ** SOFTWARE.
 *********************************************************************************/
 #include <iostream>
+#include <vector>
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
+#include <boost/assign.hpp>
 #include "BerserkerDriver.h"
 
 using namespace std;
@@ -49,8 +51,8 @@ protected:
 
   std::string _odom_id;
   std::string _child_id;
-  std::vector<double> _pose_cov_diag(6, 1e-6);
-  std::vector<double> _twist_cov_diag(6, 1e-6);
+  boost::assign_detail::generic_list<double> _pose_covariance;
+  boost::assign_detail::generic_list<double> _twist_covariance;
 
 private:
   IQR::BerserkerDriver *_bd;
@@ -72,10 +74,14 @@ BerserkerDriverNode::BerserkerDriverNode()
   _nh.param<std::string>("robot_right_wheel_joint_name", _rightWheelJointName, "FR_wheel_joint");
   _nh.param<std::string>("odom_id", _odom_id, "odom");
   _nh.param<std::string>("odom_child_id", _child_id, "base_footprint");
-  if (m_nh.hasParam("odom_pose_covariance_diagonal"))
+
+  std::vector<double> pose_cov_diag(6, 1e-6);
+  std::vector<double> twist_cov_diag(6, 1e-6);
+
+  if (_nh.hasParam("odom_pose_covariance_diagonal"))
   {
     XmlRpc::XmlRpcValue pose_cov_list;
-    m_nh.getParam("odom_pose_covariance_diagonal", pose_cov_list);
+    _nh.getParam("odom_pose_covariance_diagonal", pose_cov_list);
     ROS_ASSERT(pose_cov_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
     ROS_ASSERT(pose_cov_list.size() == 6);
     for (int i = 0; i < pose_cov_list.size(); ++i)
@@ -84,7 +90,7 @@ BerserkerDriverNode::BerserkerDriverNode()
       std::ostringstream ostr;
       ostr << pose_cov_list[i];
       std::istringstream istr(ostr.str());
-      istr >> _pose_cov_diag[i];
+      istr >> pose_cov_diag[i];
     }
   }
   else
@@ -92,10 +98,10 @@ BerserkerDriverNode::BerserkerDriverNode()
     ROS_WARN("Pose covariance diagonals not specified for odometry integration. Defaulting to 1e-6.");
   }
 
-  if (m_nh.hasParam("odom_twist_covariance_diagonal"))
+  if (_nh.hasParam("odom_twist_covariance_diagonal"))
   {
     XmlRpc::XmlRpcValue twist_cov_list;
-    m_nh.getParam("odom_twist_covariance_diagonal", twist_cov_list);
+    _nh.getParam("odom_twist_covariance_diagonal", twist_cov_list);
     ROS_ASSERT(twist_cov_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
     ROS_ASSERT(twist_cov_list.size() == 6);
     for (int i = 0; i < twist_cov_list.size(); ++i)
@@ -104,13 +110,16 @@ BerserkerDriverNode::BerserkerDriverNode()
       std::ostringstream ostr;
       ostr << twist_cov_list[i];
       std::istringstream istr(ostr.str());
-      istr >> _twist_cov_diag[i];
+      istr >> twist_cov_diag[i];
     }
   }
   else
   {
     ROS_WARN("Twist covariance diagonals not specified for odometry integration. Defaulting to 1e-6.");
   }
+
+  _pose_covariance = boost::assign::list_of(pose_cov_diag[0])(0)(0)(0)(0)(0)(0)(pose_cov_diag[1])(0)(0)(0)(0)(0)(0)(pose_cov_diag[2])(0)(0)(0)(0)(0)(0)(pose_cov_diag[3])(0)(0)(0)(0)(0)(0)(pose_cov_diag[4])(0)(0)(0)(0)(0)(0)(pose_cov_diag[5]);
+  _twist_covariance = boost::assign::list_of(twist_cov_diag[0])(0)(0)(0)(0)(0)(0)(twist_cov_diag[1])(0)(0)(0)(0)(0)(0)(twist_cov_diag[2])(0)(0)(0)(0)(0)(0)(twist_cov_diag[3])(0)(0)(0)(0)(0)(0)(twist_cov_diag[4])(0)(0)(0)(0)(0)(0)(twist_cov_diag[5]);
 
   //joint_states
   _js.name.resize(2);
@@ -163,6 +172,9 @@ void BerserkerDriverNode::pubOdom()
   float nLS, nRS;
   _bd->getEncoder(nLE, nRE);
   _bd->getWheelSpeed(nLS, nRS);
+
+  ROS_INFO("encoder:[%d,%d], speed:[%f,%f]", nLE, nRE, nLS, nRS);
+
   double vx = (nLS + nRS) / 2.0;
   double vth = (nRS - nLS) / 0.60;
 
@@ -203,13 +215,14 @@ void BerserkerDriverNode::pubOdom()
   odom.pose.pose.position.y = y;
   odom.pose.pose.position.z = 0.0;
   odom.pose.pose.orientation = odom_quat;
-  odom.pose.pose.covariance = boost::assign::list_of(_pose_cov_diag[0])(0)(0)(0)(0)(0)(0)(_pose_cov_diag[1])(0)(0)(0)(0)(0)(0)(_pose_cov_diag[2])(0)(0)(0)(0)(0)(0)(_pose_cov_diag[3])(0)(0)(0)(0)(0)(0)(_pose_cov_diag[4])(0)(0)(0)(0)(0)(0)(_pose_cov_diag[5]);
+  odom.pose.covariance = _pose_covariance;
   //set the velocity
   odom.child_frame_id = _child_id;
   odom.twist.twist.linear.x = vx;
   odom.twist.twist.linear.y = 0.0;
   odom.twist.twist.angular.z = vth;
-  odom.twist.covariance = boost::assign::list_of(_twist_cov_diag[0])(0)(0)(0)(0)(0)(0)(_twist_cov_diag[1])(0)(0)(0)(0)(0)(0)(_twist_cov_diag[2])(0)(0)(0)(0)(0)(0)(_twist_cov_diag[3])(0)(0)(0)(0)(0)(0)(_twist_cov_diag[4])(0)(0)(0)(0)(0)(0)(_twist_cov_diag[5]);
+  odom.twist.covariance = _twist_covariance;
+  
   _odomPub.publish(odom);
 
   last_time = now_time;
