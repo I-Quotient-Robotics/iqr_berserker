@@ -14,13 +14,13 @@
 
   <!--imu&gps ros node-->
   <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen" >
-		<param name="baudrate" type="int" value="115200" />
-		<param name="port" type="string" value="/dev/jy901_gps" />
-		<param name="looprate" type="int" value="100" />
-	</node>
+	  <param name="baudrate" type="int" value="115200" />
+	  <param name="port" type="string" value="/dev/jy901_gps" />
+	  <param name="looprate" type="int" value="100" />
+  </node>
 
   <!-- Robot pose ekf -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="$(arg log_type)">
+  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="50.0"/>
