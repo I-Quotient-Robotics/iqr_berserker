@@ -51,6 +51,7 @@ protected:
 
   std::string _odom_id;
   std::string _child_id;
+  bool _odom_tf_publish_flag;
   boost::assign_detail::generic_list<double> _pose_covariance;
   boost::assign_detail::generic_list<double> _twist_covariance;
 
@@ -74,6 +75,7 @@ BerserkerDriverNode::BerserkerDriverNode()
   _nh.param<std::string>("robot_right_wheel_joint_name", _rightWheelJointName, "FR_wheel_joint");
   _nh.param<std::string>("odom_id", _odom_id, "odom");
   _nh.param<std::string>("odom_child_id", _child_id, "base_footprint");
+  _nh.param<bool>("odom_tf_publish_flag", _odom_tf_publish_flag, true);
 
   std::vector<double> pose_cov_diag(6, 1e-6);
   std::vector<double> twist_cov_diag(6, 1e-6);
@@ -203,8 +205,11 @@ void BerserkerDriverNode::pubOdom()
   odom_trans.transform.rotation = odom_quat;
 
   //send the transform
-  odom_broadcaster.sendTransform(odom_trans);
-
+  if (_odom_tf_publish_flag)
+  {
+    odom_broadcaster.sendTransform(odom_trans);
+  }
+  
   //next, we'll publish the odometry message over ROS
   nav_msgs::Odometry odom;
   odom.header.stamp = now_time;

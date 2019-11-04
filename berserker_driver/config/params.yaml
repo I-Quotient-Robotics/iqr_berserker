@@ -9,5 +9,6 @@ robot_right_wheel_joint_name: FR_wheel_joint
 
 odom_id: odom
 odom_child_id: base_footprint
+odom_tf_publish_flag: false
 odom_pose_covariance_diagonal: [1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-3]
 odom_twist_covariance_diagonal: [1e-3, 1e-5, 1e-6, 1e-6, 1e-6, 1e-2]

@@ -12,7 +12,7 @@
     <remap from="berserker/odom" to="odom"/>
   </node>
 
-  <!--imu&gps ros node-->
+  <!-- Imu and gps ros node -->
   <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen">
     <param name="baudrate" type="int" value="115200" />
     <param name="port" type="string" value="/dev/jy901_gps" />
