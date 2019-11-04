@@ -1,18 +1,13 @@
 # Parameter settings for berserker ros driver node
+robot_port: /dev/berserker
+robot_wheel_base: 0.60
+robot_wheel_diameter: 0.35
+robot_encoder_lines: 1000
+robot_reduction_ratio: 10.0
+robot_left_wheel_joint_name: FL_wheel_joint
+robot_right_wheel_joint_name: FR_wheel_joint
 
-robot:
-  port: /dev/ttyACM0
-  wheel_base: 0.60
-  wheel_diameter: 0.35
-  max_speed: 2.0
-  min_speed: -2.0
-  encoder_lines: 1000
-  reduction_ratio: 10.0
-
-odometry:
-  odom_id: odom
-  child_id: base_footprint
-  pub_rate: 30
-  tf_publish_flag: true
-  pose_covariance_diagonal: [1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-3]
-  twist_covariance_diagonal: [1e-3, 1e-5, 1e-6, 1e-6, 1e-6, 1e-2]
+odom_id: odom
+odom_child_id: base_footprint
+odom_pose_covariance_diagonal: [1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-3]
+odom_twist_covariance_diagonal: [1e-3, 1e-5, 1e-6, 1e-6, 1e-6, 1e-2]

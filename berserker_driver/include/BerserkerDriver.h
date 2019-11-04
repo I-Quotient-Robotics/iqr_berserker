@@ -54,7 +54,7 @@ public:
   BerserkerDriver(const std::string &portName);
   ~BerserkerDriver();
 
-  void getEncoder(float &LE, float &RE);
+  void getEncoder(int32_t &LE, int32_t &RE);
   void getWheelSpeed(float &VL, float &VR);
   void setSpeed(const float &vx, const float &vth);
 

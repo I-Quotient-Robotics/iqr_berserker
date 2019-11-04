@@ -3,7 +3,6 @@
   <!--common settings-->
   <arg name="lidar" default="true"/> <!--rplidar-a2 ros node-->
   <arg name="teleop" default="true"/>
-  <arg name="imu_gps" default="true"/>
   <arg name="rtk_gps" default="false"/>
   <arg name="hector" default="false"/>
   <arg name="gmapping" default="false"/> 
@@ -21,11 +20,6 @@
   <!--joy ros node-->
   <group if="$(arg teleop)">
     <include file="$(find iqr_teleop)/launch/joy_teleop.launch"/>
-  </group>
-
-  <!--imu&gps ros node-->
-  <group if="$(arg imu_gps)">
-    <include file="$(find jy901_driver)/launch/jy901.launch"/>
   </group>
 
   <!--rtk_gps-->

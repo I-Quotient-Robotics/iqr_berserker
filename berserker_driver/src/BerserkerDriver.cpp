@@ -63,7 +63,7 @@ IQR::BerserkerDriver::~BerserkerDriver()
   delete _frame;
 }
 
-void IQR::BerserkerDriver::getEncoder(float &LE, float &RE)
+void IQR::BerserkerDriver::getEncoder(int32_t &LE, int32_t &RE)
 {
   std::lock_guard<std::mutex> lck(_mtx);
   LE = _encoder.EL;
