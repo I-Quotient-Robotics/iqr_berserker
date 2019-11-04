@@ -136,7 +136,7 @@ BerserkerDriverNode::BerserkerDriverNode()
   //set subscriber
   _cmdSub = _nh.subscribe("cmd_vel", 50, &BerserkerDriverNode::callBack, this);
 
-  cout << "robot port name:" << _portName << endl;
+  ROS_INFO("Berserker port name: %s", _portName.c_str());
   _bd = new IQR::BerserkerDriver(_portName);
 }
 
@@ -173,7 +173,7 @@ void BerserkerDriverNode::pubOdom()
   _bd->getEncoder(nLE, nRE);
   _bd->getWheelSpeed(nLS, nRS);
 
-  ROS_INFO("encoder:[%d,%d], speed:[%f,%f]", nLE, nRE, nLS, nRS);
+  //ROS_INFO("encoder:[%d,%d], speed:[%f,%f]", nLE, nRE, nLS, nRS);
 
   double vx = (nLS + nRS) / 2.0;
   double vth = (nRS - nLS) / 0.60;
@@ -222,7 +222,7 @@ void BerserkerDriverNode::pubOdom()
   odom.twist.twist.linear.y = 0.0;
   odom.twist.twist.angular.z = vth;
   odom.twist.covariance = _twist_covariance;
-  
+
   _odomPub.publish(odom);
 
   last_time = now_time;
@@ -230,7 +230,7 @@ void BerserkerDriverNode::pubOdom()
 
 void BerserkerDriverNode::callBack(const geometry_msgs::Twist &msg)
 {
-  ROS_INFO("[%f,%f]", msg.linear.x, msg.angular.z);
+  //ROS_INFO("[%f,%f]", msg.linear.x, msg.angular.z);
   _bd->setSpeed(msg.linear.x, msg.angular.z);
 }
 

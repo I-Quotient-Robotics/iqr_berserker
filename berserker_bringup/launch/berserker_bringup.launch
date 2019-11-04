@@ -6,17 +6,17 @@
 
   <!-- Load robot driver -->
   <node pkg="berserker_driver" type="BerserkerDriverNode" name="berserker" output="screen">
-    <rosparam file="$(find berserker_driver)/config/params.yaml" command="load" />	
+    <rosparam file="$(find berserker_driver)/config/params.yaml" command="load" />
     <remap from="berserker/cmd_vel" to="cmd_vel"/>
     <remap from="berserker/joint_states" to="joint_states"/>
     <remap from="berserker/odom" to="odom"/>
   </node>
 
   <!--imu&gps ros node-->
-  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen" >
-	  <param name="baudrate" type="int" value="115200" />
-	  <param name="port" type="string" value="/dev/jy901_gps" />
-	  <param name="looprate" type="int" value="100" />
+  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen">
+    <param name="baudrate" type="int" value="115200" />
+    <param name="port" type="string" value="/dev/jy901_gps" />
+    <param name="looprate" type="int" value="100" />
   </node>
 
   <!-- Robot pose ekf -->
@@ -30,6 +30,7 @@
     <param name="vo_used" value="false"/>
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="false"/>
+    <remap from="imu_data" to="/imu/data"/>
   </node>
 
 </launch>
