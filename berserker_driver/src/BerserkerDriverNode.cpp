@@ -155,8 +155,8 @@ void BerserkerDriverNode::pubJointState()
   _bd->getWheelSpeed(l_w_s, r_w_s);
 
   _js.header.stamp = ros::Time::now();
-  _js.position[0] = l_w_s;
-  _js.position[1] = r_w_s;
+  _js.velocity[0] = l_w_s;
+  _js.velocity[1] = r_w_s;
   _jointPub.publish(_js);
 }
 
