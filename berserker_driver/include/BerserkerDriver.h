@@ -37,13 +37,10 @@ namespace IQR
 
 struct BerserkerEncoder
 {
-  int32_t dL;
-  int32_t dR;
-  uint32_t dt;
-  float vL;
-  float vR;
   int32_t EL;
   int32_t ER;
+  float VL;
+  float VR;
 };
 
 

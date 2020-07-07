@@ -1,26 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+  <!--common settings-->
+  <arg name="imu" default="true"/>
+  <arg name="lidar" default="true"/>
+  <arg name="teleop" default="true"/>
+  <arg name="amcl" default="false"/>
+  <arg name="hector" default="false"/>
+  <arg name="gmapping" default="false"/>
+  <arg name="robot_localization" default="false"/>
+  <arg name="move_base" default="false"/>
+  <arg name="map" default="map.yaml" doc="pre-saved map path"/>
+  <arg name="have_map" default="false" doc="set to true to load pre-saved map"/>
 
-  <!-- Load URDF file -->
-  <include file="$(find berserker_description)/launch/state_publisher.launch" />
+  <!--berserker ros node-->
+  <include file="$(find berserker_driver)/launch/berserker_driver.launch"/>
 
-  <!-- Load robot driver -->
-  <node pkg="berserker_driver" type="BerserkerDriverNode" name="berserker" output="screen">
-    <rosparam file="$(find berserker_driver)/config/params.yaml" command="load" />
-    <remap from="berserker/cmd_vel" to="cmd_vel"/>
-    <remap from="berserker/joint_states" to="joint_states"/>
-    <remap from="berserker/odom" to="odom"/>
-  </node>
+  <!--imu/gps ros node-->
+  <group if="$(arg imu)">
+    <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen">
+      <param name="baudrate" type="int" value="115200" />
+      <param name="port" type="string" value="/dev/jy901_gps" />
+      <param name="looprate" type="int" value="100" />
+    </node>
+  </group>
 
-  <!-- Imu and gps ros node -->
-  <node pkg="jy901_driver" type="jy901_driver_node" name="jy901_node" output="screen">
-    <param name="baudrate" type="int" value="115200" />
-    <param name="port" type="string" value="/dev/jy901_gps" />
-    <param name="looprate" type="int" value="100" />
-  </node>
+  <!--rplidar-a2 ros node-->
+  <group if="$(arg lidar)">
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+      <param name="serial_port" type="string" value="/dev/rplidar"/>
+      <param name="serial_baudrate" type="int" value="115200"/>
+      <param name="frame_id" type="string" value="laser"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+    </node>
+  </group>
+
+  <!--joy ros node-->
+  <group if="$(arg teleop)">
+    <include file="$(find iqr_teleop)/launch/joy_teleop.launch"/>
+  </group>
+
+  <!--amcl ros node-->
+  <group if="$(arg amcl)">
+    <include file="$(find berserker_navigation)/launch/amcl.launch"/>
+  </group>
+
+  <!--hector slam ros node-->
+  <group if="$(arg hector)">
+    <include file="$(find berserker_navigation)/launch/hector.launch"/>
+  </group>
+
+  <!--gmapping slam ros node-->
+  <group if="$(arg gmapping)">
+    <include file="$(find berserker_navigation)/launch/gmapping.launch"/>
+  </group>
+
+  <!--robot_localization ros node-->
+  <group if="$(arg robot_localization)">
+    <include file="$(find berserker_navigation)/launch/robot_localization.launch" />
+  </group>
+
+  <!--map server ros node-->
+  <group if="$(arg have_map)">
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find berserker_navigation)/maps/$(arg map).yaml" />
+  </group>
+
+  <!--move_base ros node-->
+  <group if="$(arg move_base)">
+    <include file="$(find berserker_navigation)/launch/move_base.launch" />
+  </group>
 
   <!-- Robot pose ekf -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+  <!--node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
     <param name="output_frame" value="odom"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="50.0"/>
@@ -31,6 +82,6 @@
     <param name="debug" value="true"/>
     <param name="self_diagnose" value="false"/>
     <remap from="imu_data" to="/imu/data"/>
-  </node>
+  </node-->
 
 </launch>

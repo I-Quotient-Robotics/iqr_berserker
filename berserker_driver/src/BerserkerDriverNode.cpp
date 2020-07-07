@@ -132,11 +132,11 @@ BerserkerDriverNode::BerserkerDriverNode()
   _js.name[1] = _rightWheelJointName;
 
   //set publisher
-  _odomPub = _nh.advertise<nav_msgs::Odometry>("odom", 50);
-  _jointPub = _nh.advertise<sensor_msgs::JointState>("joint_states", 50);
+  _odomPub = _nh.advertise<nav_msgs::Odometry>("odom", 1);
+  _jointPub = _nh.advertise<sensor_msgs::JointState>("joint_states", 1);
 
   //set subscriber
-  _cmdSub = _nh.subscribe("cmd_vel", 50, &BerserkerDriverNode::callBack, this);
+  _cmdSub = _nh.subscribe("cmd_vel", 1, &BerserkerDriverNode::callBack, this);
 
   ROS_INFO("Berserker port name: %s", _portName.c_str());
   _bd = new IQR::BerserkerDriver(_portName);
@@ -162,11 +162,13 @@ void BerserkerDriverNode::pubJointState()
 
 void BerserkerDriverNode::pubOdom()
 {
+  static int32_t oLE = 0;
+  static int32_t oRE = 0;
   static double x = 0.0;
   static double y = 0.0;
   static double th = 0.0;
-  static ros::Time now_time = ros::Time::now();
-  static ros::Time last_time = ros::Time::now();
+  static ros::Time now_time;
+  static ros::Time last_time;
 
   now_time = ros::Time::now();
 
@@ -174,22 +176,58 @@ void BerserkerDriverNode::pubOdom()
   float nLS, nRS;
   _bd->getEncoder(nLE, nRE);
   _bd->getWheelSpeed(nLS, nRS);
-
   //ROS_INFO("encoder:[%d,%d], speed:[%f,%f]", nLE, nRE, nLS, nRS);
 
-  double vx = (nLS + nRS) / 2.0;
-  double vth = (nRS - nLS) / 0.60;
-
-  //compute odometry in a typical way given the velocities of the robot
+  //calculate dt
+  if (last_time.isZero())
+  {
+    oLE = nLE;
+    oRE = nRE;
+    last_time = now_time;
+    return;
+  }
   double dt = (now_time - last_time).toSec();
+  last_time = now_time;
+
+  //calculate sLS sRS
+  double dLD =  (nLE - oLE) * 1.09955741e-4;
+  double dRD =  (nRE - oRE) * 1.09955741e-4;
+  double sLS = dLD / dt;
+  double sRS = dRD / dt;
+  oLE = nLE;
+  oRE = nRE;
+
+  //calculate vx vth
+  //double vx =  (nRS + nLS) / 2.0;
+  //double vth = (nRS - nLS) / 0.60;
+  double vx =  (sRS + sLS) / 2.0;
+  double vth = (sRS - sLS) / 0.60;
+
+  //calculate dx dy dth
   double delta_x = (vx * cos(th)) * dt;
   double delta_y = (vx * sin(th)) * dt;
   double delta_th = vth * dt;
-
   x += delta_x;
   y += delta_y;
   th += delta_th;
 
+  //calculate x y th
+  // double dS = (dLD + dRD)/2.0;
+  // double dTH = (dRD - dLD)/0.6;
+  // if (fabs(dTH) > 1e-4) 
+	// {
+	// 	double r = fabs(dS / dTH);
+	// 	x -= r * (sin(th + dTH) - sin(th));
+	// 	y += r * (cos(th + dTH) - cos(th));
+	// 	th += dTH;
+	// }
+	// else
+	// {
+	// 	x += dS * cos(th);
+	// 	y += dS * sin(th);
+	// 	th += dTH;
+	// }
+  
   //since all odometry is 6DOF we'll need a quaternion created from yaw
   geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 
@@ -229,8 +267,6 @@ void BerserkerDriverNode::pubOdom()
   odom.twist.covariance = _twist_covariance;
 
   _odomPub.publish(odom);
-
-  last_time = now_time;
 }
 
 void BerserkerDriverNode::callBack(const geometry_msgs::Twist &msg)

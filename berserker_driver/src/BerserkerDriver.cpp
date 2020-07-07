@@ -37,6 +37,15 @@ static inline void delay()
 #endif
 }
 
+static inline void delay(uint32_t sleep_ms)
+{
+#if defined(_WIN32)
+  Sleep(sleep_ms);
+#else
+  usleep(sleep_ms * 1000);
+#endif
+}
+
 IQR::BerserkerDriver::BerserkerDriver(const std::string &portName)
     : _readFlage(false)
 {
@@ -52,7 +61,7 @@ IQR::BerserkerDriver::BerserkerDriver(const std::string &portName)
     std::cout << "open " << portName << " serial port error code:" << _com->getError() << std::endl;
   }
   _frame = new QSerialFrame(0x01);
-
+  delay(500);
   start();
 }
 
@@ -73,8 +82,8 @@ void IQR::BerserkerDriver::getEncoder(int32_t &LE, int32_t &RE)
 void IQR::BerserkerDriver::getWheelSpeed(float &VL, float &VR)
 {
   std::lock_guard<std::mutex> lck(_mtx);
-  VL = _encoder.vL;
-  VR = _encoder.vR;
+  VL = _encoder.VL;
+  VR = _encoder.VR;
 }
 
 void IQR::BerserkerDriver::setSpeed(const float &vx, const float &vth)
@@ -121,13 +130,10 @@ void IQR::BerserkerDriver::run()
         switch (_frame->RcvData[0])
         {
         case 0x01:
-          _encoder.dL = QSerialFrame::bytesToInt32(_frame->RcvData + 2);
-          _encoder.dR = QSerialFrame::bytesToInt32(_frame->RcvData + 6);
-          _encoder.dt = QSerialFrame::bytesToInt32(_frame->RcvData + 10);
-          _encoder.vL = QSerialFrame::byteToFloat32(_frame->RcvData + 14);
-          _encoder.vR = QSerialFrame::byteToFloat32(_frame->RcvData + 18);
-          _encoder.EL = QSerialFrame::bytesToInt32(_frame->RcvData + 22);
-          _encoder.ER = QSerialFrame::bytesToInt32(_frame->RcvData + 26);
+          _encoder.EL = QSerialFrame::bytesToInt32(_frame->RcvData + 2);
+          _encoder.ER = QSerialFrame::bytesToInt32(_frame->RcvData + 6);
+          _encoder.VL = QSerialFrame::byteToFloat32(_frame->RcvData + 10);
+          _encoder.VR = QSerialFrame::byteToFloat32(_frame->RcvData + 14);
           break;
         case 0x02:
           break;
