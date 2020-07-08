@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+  <arg name="publish_tf" default="true"/>
+
   <!-- Load URDF file -->
   <include file="$(find berserker_description)/launch/state_publisher.launch" />
 
   <!-- Load robot driver -->
   <node pkg="berserker_driver" type="BerserkerDriverNode" name="berserker" output="screen">
     <rosparam file="$(find berserker_driver)/config/params.yaml" command="load" />
+    <param name="odom_tf_publish_flag" value="False" unless="$(arg publish_tf)"/>
     <remap from="berserker/cmd_vel" to="cmd_vel"/>
     <remap from="berserker/joint_states" to="joint_states"/>
     <remap from="berserker/odom" to="odom"/>

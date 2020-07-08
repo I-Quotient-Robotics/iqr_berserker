@@ -42,48 +42,47 @@ public:
   void pubJointState();
   void pubOdom();
 
-protected:
-  void callBack(const geometry_msgs::Twist &msg);
-  //ros params
-  std::string _portName;
-  std::string _leftWheelJointName;
-  std::string _rightWheelJointName;
-
-  std::string _odom_id;
-  std::string _child_id;
-  bool _odom_tf_publish_flag;
-  boost::assign_detail::generic_list<double> _pose_covariance;
-  boost::assign_detail::generic_list<double> _twist_covariance;
-
 private:
-  IQR::BerserkerDriver *_bd;
-
-  ros::NodeHandle _nh;
-  ros::Subscriber _cmdSub;
-  ros::Publisher _odomPub;
-  ros::Publisher _jointPub;
-  sensor_msgs::JointState _js;
-  tf::TransformBroadcaster odom_broadcaster;
+  void callBack(const geometry_msgs::Twist &msg);
+  
+  //ros
+  ros::NodeHandle nh_;
+  ros::Subscriber cmdSub_;
+  ros::Publisher odomPub_;
+  ros::Publisher jointPub_;
+  sensor_msgs::JointState js_;
+  tf::TransformBroadcaster odom_broadcaster_;
+  //ros params
+  std::string portName_;
+  std::string odomName_;
+  std::string childName_;
+  bool odom_tf_publish_flag_;
+  std::string leftWheelJointName_;
+  std::string rightWheelJointName_;
+  boost::assign_detail::generic_list<double> pose_covariance_;
+  boost::assign_detail::generic_list<double> twist_covariance_;
+  //robot driver
+  IQR::BerserkerDriver *bd_;
 };
 
 BerserkerDriverNode::BerserkerDriverNode()
-    : _nh("~")
+    : nh_("~")
 {
   //init params
-  _nh.param<std::string>("robot_port", _portName, "/dev/ttyACM0");
-  _nh.param<std::string>("robot_left_wheel_joint_name", _leftWheelJointName, "FL_wheel_joint");
-  _nh.param<std::string>("robot_right_wheel_joint_name", _rightWheelJointName, "FR_wheel_joint");
-  _nh.param<std::string>("odom_id", _odom_id, "odom");
-  _nh.param<std::string>("odom_child_id", _child_id, "base_footprint");
-  _nh.param<bool>("odom_tf_publish_flag", _odom_tf_publish_flag, true);
+  nh_.param<std::string>("robot_port", portName_, "/dev/ttyACM0");
+  nh_.param<std::string>("robot_left_wheel_joint_name", leftWheelJointName_, "FL_wheel_joint");
+  nh_.param<std::string>("robot_right_wheel_joint_name", rightWheelJointName_, "FR_wheel_joint");
+  nh_.param<std::string>("odom_id", odomName_, "odom");
+  nh_.param<std::string>("odom_child_id", childName_, "base_footprint");
+  nh_.param<bool>("odom_tf_publish_flag", odom_tf_publish_flag_, true);
 
   std::vector<double> pose_cov_diag(6, 1e-6);
   std::vector<double> twist_cov_diag(6, 1e-6);
 
-  if (_nh.hasParam("odom_pose_covariance_diagonal"))
+  if (nh_.hasParam("odom_pose_covariance_diagonal"))
   {
     XmlRpc::XmlRpcValue pose_cov_list;
-    _nh.getParam("odom_pose_covariance_diagonal", pose_cov_list);
+    nh_.getParam("odom_pose_covariance_diagonal", pose_cov_list);
     ROS_ASSERT(pose_cov_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
     ROS_ASSERT(pose_cov_list.size() == 6);
     for (int i = 0; i < pose_cov_list.size(); ++i)
@@ -100,10 +99,10 @@ BerserkerDriverNode::BerserkerDriverNode()
     ROS_WARN("Pose covariance diagonals not specified for odometry integration. Defaulting to 1e-6.");
   }
 
-  if (_nh.hasParam("odom_twist_covariance_diagonal"))
+  if (nh_.hasParam("odom_twist_covariance_diagonal"))
   {
     XmlRpc::XmlRpcValue twist_cov_list;
-    _nh.getParam("odom_twist_covariance_diagonal", twist_cov_list);
+    nh_.getParam("odom_twist_covariance_diagonal", twist_cov_list);
     ROS_ASSERT(twist_cov_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
     ROS_ASSERT(twist_cov_list.size() == 6);
     for (int i = 0; i < twist_cov_list.size(); ++i)
@@ -120,31 +119,31 @@ BerserkerDriverNode::BerserkerDriverNode()
     ROS_WARN("Twist covariance diagonals not specified for odometry integration. Defaulting to 1e-6.");
   }
 
-  _pose_covariance = boost::assign::list_of(pose_cov_diag[0])(0)(0)(0)(0)(0)(0)(pose_cov_diag[1])(0)(0)(0)(0)(0)(0)(pose_cov_diag[2])(0)(0)(0)(0)(0)(0)(pose_cov_diag[3])(0)(0)(0)(0)(0)(0)(pose_cov_diag[4])(0)(0)(0)(0)(0)(0)(pose_cov_diag[5]);
-  _twist_covariance = boost::assign::list_of(twist_cov_diag[0])(0)(0)(0)(0)(0)(0)(twist_cov_diag[1])(0)(0)(0)(0)(0)(0)(twist_cov_diag[2])(0)(0)(0)(0)(0)(0)(twist_cov_diag[3])(0)(0)(0)(0)(0)(0)(twist_cov_diag[4])(0)(0)(0)(0)(0)(0)(twist_cov_diag[5]);
+  pose_covariance_ = boost::assign::list_of(pose_cov_diag[0])(0)(0)(0)(0)(0)(0)(pose_cov_diag[1])(0)(0)(0)(0)(0)(0)(pose_cov_diag[2])(0)(0)(0)(0)(0)(0)(pose_cov_diag[3])(0)(0)(0)(0)(0)(0)(pose_cov_diag[4])(0)(0)(0)(0)(0)(0)(pose_cov_diag[5]);
+  twist_covariance_ = boost::assign::list_of(twist_cov_diag[0])(0)(0)(0)(0)(0)(0)(twist_cov_diag[1])(0)(0)(0)(0)(0)(0)(twist_cov_diag[2])(0)(0)(0)(0)(0)(0)(twist_cov_diag[3])(0)(0)(0)(0)(0)(0)(twist_cov_diag[4])(0)(0)(0)(0)(0)(0)(twist_cov_diag[5]);
 
   //joint_states
-  _js.name.resize(2);
-  _js.position.resize(2);
-  _js.velocity.resize(2);
-  _js.effort.resize(2);
-  _js.name[0] = _leftWheelJointName;
-  _js.name[1] = _rightWheelJointName;
+  js_.name.resize(2);
+  js_.position.resize(2);
+  js_.velocity.resize(2);
+  js_.effort.resize(2);
+  js_.name[0] = leftWheelJointName_;
+  js_.name[1] = rightWheelJointName_;
 
   //set publisher
-  _odomPub = _nh.advertise<nav_msgs::Odometry>("odom", 1);
-  _jointPub = _nh.advertise<sensor_msgs::JointState>("joint_states", 1);
+  odomPub_ = nh_.advertise<nav_msgs::Odometry>("odom", 1);
+  jointPub_ = nh_.advertise<sensor_msgs::JointState>("joint_states", 1);
 
   //set subscriber
-  _cmdSub = _nh.subscribe("cmd_vel", 1, &BerserkerDriverNode::callBack, this);
+  cmdSub_ = nh_.subscribe("cmd_vel", 1, &BerserkerDriverNode::callBack, this);
 
-  ROS_INFO("Berserker port name: %s", _portName.c_str());
-  _bd = new IQR::BerserkerDriver(_portName);
+  ROS_INFO("Berserker port name: %s", portName_.c_str());
+  bd_ = new IQR::BerserkerDriver(portName_);
 }
 
 BerserkerDriverNode::~BerserkerDriverNode()
 {
-  delete _bd;
+  delete bd_;
 }
 
 void BerserkerDriverNode::pubJointState()
@@ -152,12 +151,12 @@ void BerserkerDriverNode::pubJointState()
   float l_w_s = 0.0;
   float r_w_s = 0.0;
 
-  _bd->getWheelSpeed(l_w_s, r_w_s);
+  bd_->getWheelSpeed(l_w_s, r_w_s);
 
-  _js.header.stamp = ros::Time::now();
-  _js.velocity[0] = l_w_s;
-  _js.velocity[1] = r_w_s;
-  _jointPub.publish(_js);
+  js_.header.stamp = ros::Time::now();
+  js_.velocity[0] = l_w_s;
+  js_.velocity[1] = r_w_s;
+  jointPub_.publish(js_);
 }
 
 void BerserkerDriverNode::pubOdom()
@@ -174,9 +173,11 @@ void BerserkerDriverNode::pubOdom()
 
   int32_t nLE, nRE;
   float nLS, nRS;
-  _bd->getEncoder(nLE, nRE);
-  _bd->getWheelSpeed(nLS, nRS);
+  bd_->getEncoder(nLE, nRE);
+  bd_->getWheelSpeed(nLS, nRS);
+
   //ROS_INFO("encoder:[%d,%d], speed:[%f,%f]", nLE, nRE, nLS, nRS);
+  //ROS_INFO("X:%f, Y:%F, TH:%f", x, y, th);
 
   //calculate dt
   if (last_time.isZero())
@@ -186,21 +187,31 @@ void BerserkerDriverNode::pubOdom()
     last_time = now_time;
     return;
   }
+
   double dt = (now_time - last_time).toSec();
+  if (dt == 0)
+    return;
   last_time = now_time;
 
   //calculate sLS sRS
-  double dLD =  (nLE - oLE) * 1.09955741e-4;
-  double dRD =  (nRE - oRE) * 1.09955741e-4;
+  double dLD = (nLE - oLE) * 1.09955741e-4;
+  double dRD = (nRE - oRE) * 1.09955741e-4;
   double sLS = dLD / dt;
   double sRS = dRD / dt;
   oLE = nLE;
   oRE = nRE;
 
+  js_.header.stamp = ros::Time::now();
+  js_.position[0] = nLE * 6.2831852e-4;
+  js_.position[1] = nRE * 6.2831852e-4;
+  js_.velocity[0] = sLS;
+  js_.velocity[1] = sRS;
+  jointPub_.publish(js_);
+
   //calculate vx vth
   //double vx =  (nRS + nLS) / 2.0;
   //double vth = (nRS - nLS) / 0.60;
-  double vx =  (sRS + sLS) / 2.0;
+  double vx = (sRS + sLS) / 2.0;
   double vth = (sRS - sLS) / 0.60;
 
   //calculate dx dy dth
@@ -214,28 +225,28 @@ void BerserkerDriverNode::pubOdom()
   //calculate x y th
   // double dS = (dLD + dRD)/2.0;
   // double dTH = (dRD - dLD)/0.6;
-  // if (fabs(dTH) > 1e-4) 
-	// {
-	// 	double r = fabs(dS / dTH);
-	// 	x -= r * (sin(th + dTH) - sin(th));
-	// 	y += r * (cos(th + dTH) - cos(th));
-	// 	th += dTH;
-	// }
-	// else
-	// {
-	// 	x += dS * cos(th);
-	// 	y += dS * sin(th);
-	// 	th += dTH;
-	// }
-  
+  // if (fabs(dTH) > 1e-4)
+  // {
+  // 	double r = fabs(dS / dTH);
+  // 	x -= r * (sin(th + dTH) - sin(th));
+  // 	y += r * (cos(th + dTH) - cos(th));
+  // 	th += dTH;
+  // }
+  // else
+  // {
+  // 	x += dS * cos(th);
+  // 	y += dS * sin(th);
+  // 	th += dTH;
+  // }
+
   //since all odometry is 6DOF we'll need a quaternion created from yaw
   geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 
   //first, we'll publish the transform over tf
   geometry_msgs::TransformStamped odom_trans;
   odom_trans.header.stamp = now_time;
-  odom_trans.header.frame_id = _odom_id;
-  odom_trans.child_frame_id = _child_id;
+  odom_trans.header.frame_id = odomName_;
+  odom_trans.child_frame_id = childName_;
 
   odom_trans.transform.translation.x = x;
   odom_trans.transform.translation.y = y;
@@ -243,36 +254,36 @@ void BerserkerDriverNode::pubOdom()
   odom_trans.transform.rotation = odom_quat;
 
   //send the transform
-  if (_odom_tf_publish_flag)
+  if (odom_tf_publish_flag_)
   {
-    odom_broadcaster.sendTransform(odom_trans);
+    odom_broadcaster_.sendTransform(odom_trans);
   }
-  
+
   //next, we'll publish the odometry message over ROS
   nav_msgs::Odometry odom;
   odom.header.stamp = now_time;
-  odom.header.frame_id = _odom_id;
+  odom.header.frame_id = odomName_;
 
   //set the position
   odom.pose.pose.position.x = x;
   odom.pose.pose.position.y = y;
   odom.pose.pose.position.z = 0.0;
   odom.pose.pose.orientation = odom_quat;
-  odom.pose.covariance = _pose_covariance;
+  odom.pose.covariance = pose_covariance_;
   //set the velocity
-  odom.child_frame_id = _child_id;
+  odom.child_frame_id = childName_;
   odom.twist.twist.linear.x = vx;
   odom.twist.twist.linear.y = 0.0;
   odom.twist.twist.angular.z = vth;
-  odom.twist.covariance = _twist_covariance;
+  odom.twist.covariance = twist_covariance_;
 
-  _odomPub.publish(odom);
+  odomPub_.publish(odom);
 }
 
 void BerserkerDriverNode::callBack(const geometry_msgs::Twist &msg)
 {
   //ROS_INFO("[%f,%f]", msg.linear.x, msg.angular.z);
-  _bd->setSpeed(msg.linear.x, msg.angular.z);
+  bd_->setSpeed(msg.linear.x, msg.angular.z);
 }
 
 int main(int argc, char *argv[])
@@ -285,7 +296,7 @@ int main(int argc, char *argv[])
   while (ros::ok())
   {
     ros::spinOnce();
-    nd.pubJointState();
+    //nd.pubJointState();
     nd.pubOdom();
     r.sleep();
   }

@@ -1,11 +1,7 @@
-global_frame: map
-rolling_window: false
-track_unknown_space: true
-
-inflation_global:
-    inflation_radius: 0.35
-
-plugins:
-#  - {name: obstacles_laser,           type: "costmap_2d::ObstacleLayer"}
-  - {name: static,                  type: "costmap_2d::StaticLayer"}
-  - {name: inflation_global,               type: "costmap_2d::InflationLayer"}
+global_costmap:
+  global_frame: /map                # 使用map框架作为global框架
+  robot_base_frame: /base_footprint  # 机器人最底层框架
+  update_frequency: 1.0             # 全局地图更新频率，1.0~5.0
+  update_frequency: 5.0             # 发布频率
+  static_map: true                  # 是否为静态地图，一般为静态
+  rolling_window: false             # 更新全局地图

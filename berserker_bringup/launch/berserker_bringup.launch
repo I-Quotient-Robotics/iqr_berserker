@@ -7,13 +7,16 @@
   <arg name="amcl" default="false"/>
   <arg name="hector" default="false"/>
   <arg name="gmapping" default="false"/>
+  <arg name="pose_ekf" default="false"/>
   <arg name="robot_localization" default="false"/>
   <arg name="move_base" default="false"/>
-  <arg name="map" default="map.yaml" doc="pre-saved map path"/>
+  <arg name="map" default="1" doc="pre-saved map path"/>
   <arg name="have_map" default="false" doc="set to true to load pre-saved map"/>
 
   <!--berserker ros node-->
-  <include file="$(find berserker_driver)/launch/berserker_driver.launch"/>
+  <group unless="$(arg pose_ekf)">
+    <include file="$(find berserker_driver)/launch/berserker_driver.launch"/>
+  </group>
 
   <!--imu/gps ros node-->
   <group if="$(arg imu)">
@@ -21,6 +24,27 @@
       <param name="baudrate" type="int" value="115200" />
       <param name="port" type="string" value="/dev/jy901_gps" />
       <param name="looprate" type="int" value="100" />
+    </node>
+  </group>
+
+  <!-- Robot pose ekf -->
+  <group if="$(arg pose_ekf)">
+    <!--berserker ros node-->
+    <include file="$(find berserker_driver)/launch/berserker_driver.launch">
+      <arg name="publish_tf" value="false" />
+    </include>
+    <!-- Robot pose ekf -->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
+      <param name="output_frame" value="odom"/>
+      <param name="base_footprint_frame" value="base_footprint"/>
+      <param name="freq" value="50.0"/>
+      <param name="sensor_timeout" value="1.0"/>
+      <param name="odom_used" value="true"/>
+      <param name="imu_used" value="true"/>
+      <param name="vo_used" value="false"/>
+      <param name="debug" value="false"/>
+      <param name="self_diagnose" value="false"/>
+      <remap from="imu_data" to="/imu/data"/>
     </node>
   </group>
 
@@ -69,19 +93,5 @@
   <group if="$(arg move_base)">
     <include file="$(find berserker_navigation)/launch/move_base.launch" />
   </group>
-
-  <!-- Robot pose ekf -->
-  <!--node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
-    <param name="output_frame" value="odom"/>
-    <param name="base_footprint_frame" value="base_footprint"/>
-    <param name="freq" value="50.0"/>
-    <param name="sensor_timeout" value="1.0"/>
-    <param name="odom_used" value="true"/>
-    <param name="imu_used" value="true"/>
-    <param name="vo_used" value="false"/>
-    <param name="debug" value="true"/>
-    <param name="self_diagnose" value="false"/>
-    <remap from="imu_data" to="/imu/data"/>
-  </node-->
 
 </launch>
