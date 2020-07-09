@@ -4,11 +4,8 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
         - /Global Map1/Costmap1
         - /Local Map1/Costmap1
-        - /Local Map1/Planner1
-        - /Local Map1/Trajectory Cloud1
         - /TF1/Frames1
       Splitter Ratio: 0.605187297
     Tree Height: 843
@@ -189,6 +186,14 @@ Visualization Manager:
           Topic: /move_base/DWAPlannerROS/global_plan
           Unreliable: false
           Value: true
+        - Alpha: 1
+          Class: rviz/Polygon
+          Color: 25; 255; 0
+          Enabled: true
+          Name: Polygon
+          Topic: /move_base/global_costmap/footprint
+          Unreliable: false
+          Value: true
       Enabled: true
       Name: Global Map
     - Class: rviz/Group
@@ -199,7 +204,7 @@ Visualization Manager:
           Draw Behind: false
           Enabled: true
           Name: Costmap
-          Topic: /map
+          Topic: /move_base/local_costmap/costmap
           Unreliable: false
           Use Timestamp: false
           Value: true
@@ -285,6 +290,14 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: false
+          Value: true
+        - Alpha: 1
+          Class: rviz/Polygon
+          Color: 25; 255; 0
+          Enabled: true
+          Name: Polygon
+          Topic: /move_base/local_costmap/footprint
+          Unreliable: false
           Value: true
       Enabled: true
       Name: Local Map
@@ -436,26 +449,21 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/XYOrbit
-      Distance: 10.3228769
+      Angle: -0.00499999989
+      Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 0.302026391
-        Y: -3.3942132
-        Z: 1.84380006e-05
-      Focal Shape Fixed Size: true
-      Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.56979632
+      Scale: 11.9470387
       Target Frame: <Fixed Frame>
-      Value: XYOrbit (rviz)
-      Yaw: 4.72356987
+      Value: TopDownOrtho (rviz)
+      X: 20.4683113
+      Y: -4.76089859
     Saved: ~
 Window Geometry:
   Displays:

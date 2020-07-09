@@ -26,7 +26,7 @@ TrajectoryPlannerROS:
 
    meter_scoring: true              # 以米为单位
 
-   occdist_scale: 0.1               # 避开障碍物的权重
+   occdist_scale: 0.3               # 避开障碍物的权重
    oscillation_reset_dist: 0.05     # 在振荡标志被清零前，机器人必须在出行多远。
    publish_cost_grid_pc: false      # 是否使用cost_grid发布
    prune_plan: true                 # 机器人行走1m后，结束动作。
